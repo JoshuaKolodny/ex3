@@ -1,8 +1,14 @@
 package image;
 
 import java.awt.*;
+import java.util.concurrent.LinkedTransferQueue;
 
 public class ImageEditor {
+    private static final double RED_MULT = 0.2126;
+    private static final double GREEN_MULT = 0.7152;
+    private static final double BLUE_MULT = 0.0722;
+    private static final int MAX_RGB_VAL = 255;
+
     public static Image padImage(Image image) {
         Color[][] pixelArray = buildPaddedColorArray(image);
         return new Image(pixelArray, pixelArray.length, pixelArray[0].length);
@@ -47,5 +53,45 @@ public class ImageEditor {
         return pixelArray;
     }
 
+    public static Image[][] createSubImages(Image image, int resolution) {
+        int subImageDimension = image.getWidth() / resolution;
+        int subImagesMatrixHeight = image.getHeight() / subImageDimension;
+        int subImagesMatrixWidth = image.getWidth() / subImageDimension;
+        Image[][] subImagesArray = new Image[subImagesMatrixHeight][subImagesMatrixWidth];
+        for (int i = 0; i < subImagesMatrixHeight; i++) {
+            for (int j = 0; j < subImagesMatrixWidth; j++) {
+                subImagesArray[i][j] = createSubImage(image, subImageDimension, i, j);
+            }
+        }
+        return subImagesArray;
+    }
+
+    private static Image createSubImage(Image image, int subImageDimension, int imageRow, int imageCol) {
+        Color[][] pixelArray = new Color[subImageDimension][subImageDimension];
+        int rowParam = imageRow * subImageDimension;
+        int colParam = imageCol * subImageDimension;
+        for (int row = 0; row < subImageDimension; row++) {
+            for (int col = 0; col < subImageDimension; col++) {
+                pixelArray[row][col] = image.getPixel(row + rowParam, col + colParam);
+            }
+        }
+        return new Image(pixelArray, subImageDimension, subImageDimension);
+    }
+
+    public static double calculateBrightness(Image image) {
+        double sumGreyPixels = 0;
+        int imageHeight = image.getHeight();
+        int imageWidth = image.getWidth();
+        for (int i = 0; i < imageHeight; i++) {
+            for (int j = 0; j < imageWidth; j++) {
+                sumGreyPixels += calculateGreyPixel(image.getPixel(i, j));
+            }
+        }
+        return (sumGreyPixels / (imageHeight * imageWidth)) / MAX_RGB_VAL;
+    }
+
+    private static double calculateGreyPixel(Color pixel) {
+        return pixel.getRed() * RED_MULT + pixel.getGreen() * GREEN_MULT + pixel.getBlue() * BLUE_MULT;
+    }
 
 }
