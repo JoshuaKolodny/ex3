@@ -1,13 +1,13 @@
 package image;
 
 import java.awt.*;
-import java.util.concurrent.LinkedTransferQueue;
 
 public class ImageEditor {
     private static final double RED_MULT = 0.2126;
     private static final double GREEN_MULT = 0.7152;
     private static final double BLUE_MULT = 0.0722;
     private static final int MAX_RGB_VAL = 255;
+
 
     public static Image padImage(Image image) {
         Color[][] pixelArray = buildPaddedColorArray(image);
@@ -37,7 +37,7 @@ public class ImageEditor {
         int newWidth = findNewDimension(image.getWidth());
         // Calculate padding from each side
         int verticalPadding = (newHeight - image.getHeight()) / 2;
-        int horizontalPadding = newWidth - image.getWidth() / 2;
+        int horizontalPadding = (newWidth - image.getWidth()) / 2;
         return new int[]{verticalPadding, horizontalPadding};
     }
 
