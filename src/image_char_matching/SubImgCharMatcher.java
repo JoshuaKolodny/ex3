@@ -18,8 +18,8 @@ public class SubImgCharMatcher {
         calculateMinMaxBrightness();
     }
 
-    public char getCharByImageBrightness(double newCharBrightness) {
-        double oldCharBrightness = (maxBrightness - minBrightness) * newCharBrightness + minBrightness;
+    public char getCharByImageBrightness(double brightness) {
+        double oldCharBrightness = (maxBrightness - minBrightness) * brightness + minBrightness;
         if (charBrightnessMap.containsKey(oldCharBrightness)) {
             return charBrightnessMap.get(oldCharBrightness).first();
         }
