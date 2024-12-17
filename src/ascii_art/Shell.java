@@ -1,10 +1,13 @@
 package ascii_art;
 
+import ascii_output.AsciiOutput;
+import ascii_output.AsciiOutputFactory;
+import ascii_output.ConsoleAsciiOutput;
 import constants.Constants;
-import exceptions.AddException;
+
+import java.lang.IllegalArgumentException;
+
 import exceptions.BoundariesResolutionException;
-import exceptions.RemoveException;
-import exceptions.ResolutionException;
 import image.Image;
 import image.ImageEditor;
 import image_char_matching.SubImgCharMatcher;
@@ -15,15 +18,18 @@ import java.util.TreeSet;
 public class Shell {
     private final TreeSet<Character> charset;
     private final SubImgCharMatcher subImgCharMatcher;
+    private AsciiOutput asciiOutput;
     private int resolution;
     private Image image;
     private int minCharsInRow;
     private int maxCharsInRow;
 
+
     public Shell() {
         this.charset = Constants.DEFAULT_CHARSET;
         this.resolution = Constants.DEFAULT_RESOLUTION;
         this.subImgCharMatcher = new SubImgCharMatcher(convertToCharArray(this.charset));
+        this.asciiOutput = new ConsoleAsciiOutput();
     }
 
     private char[] convertToCharArray(TreeSet<Character> charset) {
@@ -35,16 +41,15 @@ public class Shell {
         return charArray;
     }
 
-    public void run(String imageName) {
+    public void run(String imageName) throws IOException{
         try {
             createImage(imageName);
         } catch (IOException e) {
             System.out.println(Constants.INVALID_IMAGE_PATH);
         }
-        System.out.println(Constants.ENTER_MESSAGE);
+        System.out.print(Constants.ENTER_MESSAGE);
         String input = KeyboardInput.readLine();
         while (!input.equals(Constants.EXIT_INPUT)) {
-            System.out.println(Constants.ENTER_MESSAGE);
             if (input.equals(Constants.CHAR_INPUT)) {
                 printChars();
             } else if (input.startsWith(Constants.ADD_INPUT)) {
@@ -53,17 +58,48 @@ public class Shell {
                 handleRemoveCommand(input);
             } else if (input.startsWith(Constants.RES_INPUT)) {
                 handleResCommand(input);
+            } else if (input.startsWith(Constants.ROUND_INPUT)) {
+                handleRoundCommand(input);
+            } else if (input.startsWith(Constants.OUTPUT_INPUT)) {
+                handleOutputCommand(input);
+            } else if (input.equals(Constants.ASCII_ART_INPUT.strip()) || input.startsWith(Constants.ASCII_ART_INPUT)) {
+                AsciiArtAlgorithm asciiArtAlgorithm = new AsciiArtAlgorithm(image, resolution, subImgCharMatcher);
+                char[][] resultImage = asciiArtAlgorithm.run();
+                this.asciiOutput.out(resultImage);
             } else {
                 System.out.println(Constants.INCORRECT_COMMAND);
             }
+            System.out.print(Constants.ENTER_MESSAGE);
             input = KeyboardInput.readLine();
+        }
+    }
+
+    private void handleOutputCommand(String input) {
+        try {
+            String[] parts = input.split(" ", 2); // Split into at most two parts
+            String resArg = parts[1];
+            AsciiOutputFactory factory = new AsciiOutputFactory();
+            this.asciiOutput = factory.buildAsciiOutput(resArg);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void handleRoundCommand(String input) {
+        try {
+            // check argument "round "
+            String[] parts = input.split(" ", 2); // Split into at most two parts
+            String resArg = parts[1];
+            subImgCharMatcher.setRoundStrategy(resArg);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private void createImage(String imageName) throws IOException {
         image = new Image(imageName);
         image = ImageEditor.padImage(image);
-        minCharsInRow = Math.max(1, image.getWidth()/ image.getHeight());
+        minCharsInRow = Math.max(1, image.getWidth() / image.getHeight());
         maxCharsInRow = image.getWidth();
     }
 
@@ -76,24 +112,24 @@ public class Shell {
             String resArg = parts[1];
             changeRes(resArg);
             System.out.println(Constants.NEW_RES_MESSAGE + resolution);
-        } catch (ResolutionException | BoundariesResolutionException e) {
+        } catch (BoundariesResolutionException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void changeRes(String resArg) throws ResolutionException {
+    private void changeRes(String resArg) throws IllegalArgumentException {
         if (resArg.equals(Constants.RES_UP)) {
-            if (maxCharsInRow < resolution * 2){
+            if (maxCharsInRow < resolution * 2) {
                 throw new BoundariesResolutionException();
             }
             resolution *= 2;
         } else if (resArg.equals(Constants.RES_DOWN)) {
-            if (minCharsInRow * 2 > resolution){
+            if (minCharsInRow * 2 > resolution) {
                 throw new BoundariesResolutionException();
             }
             resolution /= 2;
         } else {
-            throw new ResolutionException();
+            throw new IllegalArgumentException(Constants.stringIncorrectFormatMessage(Constants.RES_INPUT.strip()));
         }
     }
 
@@ -101,11 +137,12 @@ public class Shell {
         try {
             String[] parts = input.split(" ", 2); // Split into at most two parts
             if (parts.length < 2 || parts[1].isEmpty()) {
-                throw new RemoveException(); // Treat missing argument as invalid
+                throw new IllegalArgumentException
+                        (Constants.stringIncorrectFormatMessage(Constants.REMOVE_INPUT.strip()));
             }
             String removeArg = parts[1];
             removeFromCharset(removeArg);
-        } catch (RemoveException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -115,12 +152,16 @@ public class Shell {
             removeAllChars();
             return;
         }
+        if (removeArg.equals(Constants.SPACE_ARG)) {
+            removeFromTreeAndMatcher(' ');
+            return;
+        }
         if (removeArg.length() == 3 && isValidRange(removeArg)) {
             removeCharInRange(removeArg);
             return;
         }
         if (removeArg.length() != 1 || !isValidChar(removeArg.charAt(0))) {
-            throw new RemoveException();
+            throw new IllegalArgumentException(Constants.stringIncorrectFormatMessage(Constants.REMOVE_INPUT.strip()));
         }
         this.removeFromTreeAndMatcher(removeArg.charAt(0));
     }
@@ -143,18 +184,22 @@ public class Shell {
         try {
             String[] parts = input.split(" ", 2); // Split into at most two parts
             if (parts.length < 2 || parts[1].isEmpty()) {
-                throw new AddException(); // Treat missing argument as invalid
+                throw new IllegalArgumentException(Constants.stringIncorrectFormatMessage(Constants.ADD_INPUT.strip()));
             }
             String addArg = parts[1];
             addToCharset(addArg);
-        } catch (AddException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void addToCharset(String addArg) throws AddException {
+    private void addToCharset(String addArg) throws IllegalArgumentException {
         if (addArg.equals(Constants.ALL_ARG)) {
             addAllChars();
+            return;
+        }
+        if (addArg.equals(Constants.SPACE_ARG)) {
+            addToTreeAndMatcher(' ');
             return;
         }
         if (addArg.length() == 3 && isValidRange(addArg)) {
@@ -162,7 +207,7 @@ public class Shell {
             return;
         }
         if (addArg.length() != 1 || !isValidChar(addArg.charAt(0))) {
-            throw new AddException();
+            throw new IllegalArgumentException(Constants.stringIncorrectFormatMessage(Constants.ADD_INPUT.strip()));
         }
         addToTreeAndMatcher(addArg.charAt(0));
     }
@@ -192,7 +237,7 @@ public class Shell {
     }
 
     private boolean isValidChar(char c) {
-        return (c > Constants.MAX_ASCII_VAL || c < Constants.MIN_ASCII_VAL);
+        return (c <= Constants.MAX_ASCII_VAL && c >= Constants.MIN_ASCII_VAL);
     }
 
     private void addAllChars() {
@@ -205,19 +250,17 @@ public class Shell {
         for (char c : charset) {
             System.out.print(c + " ");
         }
+        System.out.println();
     }
 
 
-    public static void main(String[] args) throws IOException {
-        Image image = new Image(args[0]);
-        int resolution = Integer.parseInt(args[1]);
+    public static void main(String[] args) {
         Shell shell = new Shell();
-//        AsciiArtAlgorithm alg = new AsciiArtAlgorithm(image, resolution, charset);
-//        char[][] result = alg.run();
-//        ConsoleAsciiOutput consoleAsciiOutput = new ConsoleAsciiOutput();
-//        consoleAsciiOutput.out(result);
-//        HtmlAsciiOutput htmlAsciiOutput = new HtmlAsciiOutput("catOutput.html","Courier New");
-//        htmlAsciiOutput.out(result);
+        try {
+        shell.run(args[0]);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 }
