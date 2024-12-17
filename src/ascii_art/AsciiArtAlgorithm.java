@@ -5,22 +5,22 @@ import ascii_output.HtmlAsciiOutput;
 import image.Image;
 import image.ImageEditor;
 import image_char_matching.SubImgCharMatcher;
+import strategies.RoundStrategy;
 
 import java.io.IOException;
 
 public class AsciiArtAlgorithm {
     private final Image image;
     private final int resolution;
-    private final char[] charset;
+    private final SubImgCharMatcher matcher;
 
-    public AsciiArtAlgorithm(Image image, int resolution, char[] charset) {
+    public AsciiArtAlgorithm(Image image, int resolution, SubImgCharMatcher matcher) {
         this.image = image;
         this.resolution = resolution;
-        this.charset = charset;
+        this.matcher = matcher;
     }
 
     public char[][] run() {
-        SubImgCharMatcher matcher = new SubImgCharMatcher(this.charset);
         Image paddedImage = ImageEditor.padImage(image);
         Image[][] subImages = ImageEditor.createSubImages(paddedImage, resolution);
         char[][] resultImage = new char[subImages.length][subImages[0].length];

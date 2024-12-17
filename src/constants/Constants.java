@@ -12,6 +12,14 @@ public class Constants {
     public static final char MIN_ASCII_VAL = 32;
     public static final char MAX_ASCII_VAL = 126;
     public static final String RES_INPUT = "res ";
+    public static final String INVALID_IMAGE_PATH = "Did not execute due to a problem with the image path";
+    public static final String ROUND_INPUT = "round ";
+    public static final String OUTPUT_INPUT = "output ";
+    public static final String HTML_FONT = "Courier New";
+    public static final String OUTPUT_FILE_NAME = "out.html";
+    public static final String OUTPUT_COMMAND = "change output method";
+    public static final String ASCII_ART_INPUT = "asciiArt ";
+    public static final String SPACE_ARG = "space";
 
     /**
      * function to handle repeated invalid messages.
@@ -23,8 +31,13 @@ public class Constants {
     }
 
     public static final String INCORRECT_COMMAND = "Did not execute due to incorrect command.";
+    public static final String BOUNDARIES_COMMAND = "Did not change resolution due to exceeding boundaries";
+    public static final String ROUND_COMMAND = "change rounding method";
     public static final String ENTER_MESSAGE = ">>> ";
     public static final String EXIT_INPUT = "exit";
     public static final String ADD_INPUT = "add ";
     public static final String REMOVE_INPUT = "remove ";
+    public static final String NEW_RES_MESSAGE = "Resolution set to ";
+    public static final String RES_UP = "up";
+    public static final String RES_DOWN = "down";
 }

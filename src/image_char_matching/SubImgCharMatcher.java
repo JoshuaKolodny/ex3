@@ -1,5 +1,9 @@
 package image_char_matching;
 
+import strategies.RoundAbsStrategy;
+import strategies.RoundStrategy;
+import strategies.RoundStrategyFactory;
+
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -7,6 +11,8 @@ public class SubImgCharMatcher {
     private final TreeMap<Double, TreeSet<Character>> charBrightnessMap;
     private double maxBrightness;
     private double minBrightness;
+
+    private RoundStrategy roundStrategy;
 
     public SubImgCharMatcher(char[] charset) {
         charBrightnessMap = new TreeMap<>();
@@ -16,31 +22,11 @@ public class SubImgCharMatcher {
         maxBrightness = Double.MIN_VALUE;
         minBrightness = Double.MAX_VALUE;
         calculateMinMaxBrightness();
+        this.roundStrategy = new RoundAbsStrategy(this);
     }
 
-    public char getCharByImageBrightness(double newCharBrightness) {
-        double oldCharBrightness = (maxBrightness - minBrightness) * newCharBrightness + minBrightness;
-        if (charBrightnessMap.containsKey(oldCharBrightness)) {
-            return charBrightnessMap.get(oldCharBrightness).first();
-        }
-        // checking for absolute value of nearest key
-        // Find the nearest keys
-        Double lowerKey = charBrightnessMap.floorKey(oldCharBrightness); // Closest key <= oldCharBrightness
-        Double higherKey = charBrightnessMap.ceilingKey(oldCharBrightness); // Closest key >= oldCharBrightness
-
-        // If only one key is available, use it
-        if (lowerKey == null){
-            return charBrightnessMap.get(higherKey).first();
-        }
-        if (higherKey == null){
-            return charBrightnessMap.get(lowerKey).first();
-        }
-
-        double distanceToLower = Math.abs(lowerKey - oldCharBrightness);
-        double distanceToHigher = Math.abs(higherKey - oldCharBrightness);
-        double nearestKey = (distanceToLower <= distanceToHigher) ? lowerKey : higherKey;
-
-        return charBrightnessMap.get(nearestKey).first();
+    public char getCharByImageBrightness(double brightness) {
+        return roundStrategy.getNearestCharBrightness(brightness);
     }
 
     private double calculateCharBrightness(char c) {
@@ -107,4 +93,15 @@ public class SubImgCharMatcher {
     public double getMaxBrightness() {
         return maxBrightness;
     }
+
+    public void setRoundStrategy(String roundStrategy) throws IllegalArgumentException{
+        RoundStrategyFactory roundStrategyFactory = new RoundStrategyFactory(this);
+        this.roundStrategy = roundStrategyFactory.buildRoundStrategy(roundStrategy);
+    }
+
+    public TreeMap<Double, TreeSet<Character>> getCharBrightnessMap() {
+        return charBrightnessMap;
+    }
+
+
 }
