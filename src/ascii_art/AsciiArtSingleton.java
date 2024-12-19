@@ -92,7 +92,7 @@ public class AsciiArtSingleton {
      *
      * @param resolution the new resolution.
      */
-    public void setPrevResolution(int resolution) {
+    private void setPrevResolution(int resolution) {
         this.prevResolution = resolution;
     }
 
@@ -110,7 +110,7 @@ public class AsciiArtSingleton {
      *
      * @param brightnesses the new brightness values.
      */
-    public void setPrevSubImagesBrightnesses(double[][] brightnesses) {
+    private void setPrevSubImagesBrightnesses(double[][] brightnesses) {
         this.prevSubImagesBrightnesses = brightnesses;
     }
 
@@ -128,15 +128,29 @@ public class AsciiArtSingleton {
      *
      * @param image the new ASCII art image.
      */
-    public void setPrevImage(char[][] image) {
+    private void setPrevImage(char[][] image) {
         this.prevImage = image;
     }
 
     /**
      * Resets the added and removed character sets.
      */
-    public void resetCharset() {
+    private void resetCharset() {
         addedCharsSet = new HashSet<>();
         removedCharsSet = new HashSet<>();
+    }
+
+    /**
+     * Updates the singleton with the latest results, including the generated ASCII art
+     * and brightness values of sub-images.
+     *
+     * @param resultImage the generated ASCII art as a 2D character array.
+     * @param subImageBrightnesses the brightness values of the sub-images.
+     */
+    public void updateSingleton(char[][] resultImage, double[][] subImageBrightnesses, int resolution) {
+        resetCharset(); // Reset the character set if needed
+        setPrevResolution(resolution); // Update the previous resolution
+        setPrevSubImagesBrightnesses(subImageBrightnesses); // Store brightness values
+        setPrevImage(resultImage); // Cache the generated ASCII art
     }
 }

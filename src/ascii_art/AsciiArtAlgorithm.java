@@ -75,21 +75,8 @@ public class AsciiArtAlgorithm {
         }
 
         // Update the singleton with the new results
-        updateSingleton(resultImage, newSubImageBrightnesses);
+        singleton.updateSingleton(resultImage, newSubImageBrightnesses, resolution);
         return resultImage;
     }
 
-    /**
-     * Updates the singleton with the latest results, including the generated ASCII art
-     * and brightness values of sub-images.
-     *
-     * @param resultImage the generated ASCII art as a 2D character array.
-     * @param subImageBrightnesses the brightness values of the sub-images.
-     */
-    private void updateSingleton(char[][] resultImage, double[][] subImageBrightnesses) {
-        singleton.resetCharset(); // Reset the character set if needed
-        singleton.setPrevResolution(resolution); // Update the previous resolution
-        singleton.setPrevSubImagesBrightnesses(subImageBrightnesses); // Store brightness values
-        singleton.setPrevImage(resultImage); // Cache the generated ASCII art
-    }
 }
