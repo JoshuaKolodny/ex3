@@ -1,6 +1,7 @@
 package constants;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.TreeSet;
 
 public class Constants {
@@ -20,13 +21,18 @@ public class Constants {
     public static final String OUTPUT_COMMAND = "change output method";
     public static final String ASCII_ART_INPUT = "asciiArt ";
     public static final String SPACE_ARG = "space";
+    public static final double RED_MULT = 0.2126;
+    public static final double GREEN_MULT = 0.7152;
+    public static final double BLUE_MULT = 0.0722;
+    public static final int MAX_RGB_VAL = 255;
+    public static final String CHANGE_RESOLUTION = "change resolution";
 
     /**
      * function to handle repeated invalid messages.
      * @param command the command to add to the message.
      * @return String of the invalid message.
      */
-    public static String stringIncorrectFormatMessage(String command) {
+    public static String incorrectFormatMessage(String command) {
         return "Did not " + command + " due to incorrect format.";
     }
 
