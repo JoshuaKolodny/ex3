@@ -84,5 +84,5 @@ itamarleva,joshuakol
 4)
     We added three public getter methods—getMinCharBrightness, getCharBrightnessMap, and
     getMaxCharBrightness—enabling strategy classes to access these fields for proper rounding strategies.
-    We also added a public setter method, setRoundStrategy, allowing the shell to change the SubImgCharMatcher’s
-    rounding strategy.
+    We also added a public setter method, setRoundStrategy, allowing the shell to change the
+    SubImgCharMatcher’s rounding strategy.
