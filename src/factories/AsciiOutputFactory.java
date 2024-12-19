@@ -31,7 +31,8 @@ public class AsciiOutputFactory {
             case "console":
                 return new ConsoleAsciiOutput();
             default:
-                throw new IllegalArgumentException(Constants.incorrectFormatMessage(Constants.OUTPUT_COMMAND));
+                throw new IllegalArgumentException(Constants.incorrectFormatMessage
+                        (Constants.OUTPUT_COMMAND));
         }
     }
 }

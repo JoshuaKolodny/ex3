@@ -105,8 +105,10 @@ public class Shell {
                 handleRoundCommand(input);
             } else if (input.startsWith(Constants.OUTPUT_INPUT)) {
                 handleOutputCommand(input);
-            } else if (input.equals(Constants.ASCII_ART_INPUT.strip()) || input.startsWith(Constants.ASCII_ART_INPUT)) {
-                AsciiArtAlgorithm asciiArtAlgorithm = new AsciiArtAlgorithm(image, resolution, subImgCharMatcher);
+            } else if (input.equals(Constants.ASCII_ART_INPUT.strip()) ||
+                    input.startsWith(Constants.ASCII_ART_INPUT)) {
+                AsciiArtAlgorithm asciiArtAlgorithm = new AsciiArtAlgorithm
+                        (image, resolution, subImgCharMatcher);
                 char[][] resultImage = asciiArtAlgorithm.run();
                 this.asciiOutput.out(resultImage);
             } else {
@@ -233,7 +235,8 @@ public class Shell {
             return;
         }
         if (removeArg.length() != 1 || !isValidChar(removeArg.charAt(0))) {
-            throw new IllegalArgumentException(Constants.incorrectFormatMessage(Constants.REMOVE_INPUT.strip()));
+            throw new IllegalArgumentException(Constants.incorrectFormatMessage
+                    (Constants.REMOVE_INPUT.strip()));
         }
         this.removeFromTreeAndMatcher(removeArg.charAt(0));
     }

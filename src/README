@@ -2,91 +2,87 @@ itamarleva,joshuakol
 322467440,318135340
 
 1)
-    We will explain the purpose of each class and connections between the classes based on the packages they are in:
+    We will explain the purpose of each class and their relationships based on the packages they are in:
+
     ascii_art package:
-        AsciiArtAlgorithm - The AsciiArtAlgorithm class generates ASCII art representations of an image. It contains an
-        AsciiArtSingleton to maintain state, and a SubImgCharMatcher instance to map brightness levels to characters.
+        AsciiArtAlgorithm - Generates ASCII art representations of images. It uses an AsciiArtSingleton
+        to maintain state and a SubImgCharMatcher instance to map brightness levels to characters.
 
-        AsciiArtSingleton - A Singleton class that manages state for the ASCII art generation process. It tracks the
-        previous resolution, sub-image brightness values, and the previously generated ASCII art. It also maintains a
-        record of added and removed characters for the charset.
+        AsciiArtSingleton - A Singleton that manages state for the ASCII art generation process. It
+        tracks the previous resolution, sub-image brightness values, previously generated ASCII art, and
+        maintains records of added and removed characters for the charset.
 
-        Shell - The Shell class serves as the command-line interface for generating ASCII art. It provides a variety
-        of commands for managing the character set, resolution, and output strategy for ASCII art generation. The class
-        interacts with the AsciiArtAlgorithm and other components to generate and display ASCII art. It contains an
-        instance of SubImgCharMatcher and of AsciiArtSingleton (composition).
+        Shell - A command-line interface for generating ASCII art. It provides commands to manage the
+        character set, resolution, and output strategy. It interacts with AsciiArtAlgorithm and other
+        components to generate and display ASCII art. It holds instances of SubImgCharMatcher and
+        AsciiArtSingleton (composition).
 
     constants package:
-        Constants - The Constants class contains constant values and utility methods used throughout the ASCII art
-        application. These constants include default configurations, command strings, and various parameters needed for
+        Constants - Contains constant values and utility methods used throughout the ASCII art
+        application. This includes default configurations, command strings, and various parameters for
         processing and validation.
 
     factories package:
-        AsciiOutputFactory - The AsciiOutputFactory class is responsible for creating instances of AsciiOutput based on
-        the specified output type.
+        AsciiOutputFactory - Responsible for creating AsciiOutput instances based on the specified
+        output type.
 
-        RoundStrategyFactory - The RoundStrategyFactory class is responsible for creating instances of RoundStrategy
-        based on the specified rounding parameter. It includes an instance of SubImgCharMatcher used for used for
-        associating brightness values with characters and when constructing the concrete classes rounding
-        based on the desired parameter;
+        RoundStrategyFactory - Creates RoundStrategy instances based on the specified rounding parameter.
+        It contains a SubImgCharMatcher used for associating brightness values with characters and for
+        constructing concrete rounding strategy classes based on desired parameters.
 
     image package:
-        Image - A class that was implemented for us, and represents an 2D Array of pixels.
+        Image - A class (provided to us) that represents a 2D array of pixels.
 
-        ImageEditor - The ImageEditor class provides utility methods for manipulating and processing images, including
-        padding images to dimensions that are powers of two, creating sub-images, and calculating brightness.
+        ImageEditor - Provides utility methods for manipulating and processing images, including padding
+        images to dimensions that are powers of two, creating sub-images, and calculating brightness.
 
-    image_char_matching:
-        SubImgCharMatcher - The SubImgCharMatcher class manages the mapping between brightness values and characters for
-        sub-image matching in ASCII art generation. Our approach was to implement a data structure which contains the
-        char brightness value before it was linearly stretched and whenever we are trying to find the closest char
-        brightness to a given sub image brightness, to perform the inverse of the linear stretch on the sub image
-        brightness and only then compare it to the charset.
+    image_char_matching package:
+        SubImgCharMatcher - Manages the mapping between brightness values and characters for sub-image
+        matching in ASCII art generation. We implemented a data structure that stores character brightness
+        values before linear stretching. To find the closest char brightness to a given sub-image brightness,
+        we first inverse the linear stretch on the sub-image brightness, then compare it to the charset.
 
-    strategies:
-        RoundStrategy - The RoundStrategy interface defines the contract for implementing rounding strategies in the
-        ASCII art generation process. It has 3 implementations in the RoundAbsStrategy, RoundUpStrategy, and
-        RoundDownStrategy classes.
+    strategies package:
+        RoundStrategy - An interface defining the contract for implementing rounding strategies in the
+        ASCII art generation process. Its implementations are RoundAbsStrategy, RoundUpStrategy, and
+        RoundDownStrategy.
 
-        RoundAbsStrategy - The RoundAbsStrategy class implements the RoundStrategy interface and provides a strategy to
-        match brightness values to the nearest character using absolute distance calculations.
+        RoundAbsStrategy - Matches brightness values to the nearest character using absolute distance
+        calculations.
 
-        RoundUpStrategy - The RoundUpStrategy class implements the RoundStrategy interface and provides a strategy to
-        match brightness values to the nearest character by rounding up to the closest higher brightness value.
+        RoundUpStrategy - Matches brightness values to the nearest character by rounding up to the next
+        higher brightness value.
 
-        RoundDownStrategy - The RoundDownStrategy class implements the RoundStrategy interface and provides a strategy
-        to match brightness values to the nearest character by rounding down to the closest lower brightness value.
+        RoundDownStrategy - Matches brightness values to the nearest character by rounding down to the
+        nearest lower brightness value.
 
 2)
-    1. TreeMap<Double, TreeSet<Character>>: We used this data structure in the SubImgCharMatcher class, the keys are
-    are double brightness value of char, and the value of the TreeMap is a TreeSet<Character> containing all chars
-    mapped with this brightness value. It's important to emphasize that our implementation contains the char brightness
-    value before it was linearly stretched, therefore allowing us to implement addChar and removeChar in O(log^2(n)).The
-    reason for that being, calculation of charBrightness is O(1), and adding/removing to BST is O(log^2(n)). We used
-    this because it's ordered, therefore when there is a collision for finding multiple chars with the same brightness,
-    we can access the lowest char value in O(1).
+    1. TreeMap<Double, TreeSet<Character>>:
+       Used in SubImgCharMatcher. Keys are double brightness values of chars. Values are TreeSet<Character>
+       sets of chars mapped to those brightness values. Our implementation stores char brightness values
+       before linear stretching, enabling add/remove operations in O(log^2(n)). This data structure is
+       ordered, so when multiple chars share the same brightness value, we can access the lowest char
+       value in O(1).
 
     2. HashSet<Character>:
-    We implemented two synchronized HashSet<Character> in our AsciiArtSingleton class representing added chars and
-    removed chars, in a way that when trying to add a char it will check if the char is in the removed set and remove it
-    from there if it's there, otherwise it will add it to the 'added' charset and the other way around as well, in order
-    to keep track of our previous charset that was run, and therefore if before the next run, the charset remains the
-    same after all the user's manipulations, if the resolution also stayed the same, we will use the previous run's
-    resultImage.
+       In AsciiArtSingleton, we maintain two synchronized HashSet<Character> sets: one for added chars and
+       one for removed chars. When adding a char, if it is in the removed set, we remove it from there;
+       otherwise, we add it to the 'added' charset. Similarly, for removal, we handle it in the opposite
+       manner. This keeps track of changes relative to the previously run charset. If the charset and
+       resolution remain unchanged before the next run, we can reuse the previous run's resultImage.
 
     3. TreeSet<Character>:
-    We used this data structure in Shell class to contain our charset, allowing us to add and remove each character in
-    O(log(n)), and print all characters in a sorted way, instead of sorting a HashSet causing it to be O(nlogn);
+       In Shell, we store the charset in a TreeSet<Character> for O(log(n)) add/remove operations and
+       sorted iteration. This avoids sorting a HashSet (O(nlogn)) whenever we need a sorted display.
 
 3)
-    In order to handle illegal user inputs, we threw IllegalArgumentException with a informative message for the user.
-    We created in our Constants class a static method for handling the desired informative message per case. We created
-    a customized "BoundariesResolutionException" class that creates an exception that is thrown and caught in a case
-    where the resolution is past the maximum/minimum limit. We also threw an IOException for an incorrect filename path.
+    To handle invalid user inputs, we throw IllegalArgumentException with informative messages. We added
+    a static method in Constants to provide these messages. We created a BoundariesResolutionException
+    class for cases where resolution exceeds max/min limits. We also throw IOException for invalid
+    filename paths.
 
 4)
-    We added 3 public getter methods, getMinCharBrightness, getCharBrightnessMap, and getMaxCharBrightness allowing the
-    strategy classes to access these fields because they need them to perform the right round strategy.
-    We added a public setter method, setRoundStrategy, allowing the shell to change the round strategy of the
-    SubImgCharMatcher.
-
+    We added three public getter methods—getMinCharBrightness, getCharBrightnessMap, and
+    getMaxCharBrightness—enabling strategy classes to access these fields for proper rounding strategies.
+    We also added a public setter method, setRoundStrategy, allowing the shell to change the SubImgCharMatcher’s
+    rounding strategy.

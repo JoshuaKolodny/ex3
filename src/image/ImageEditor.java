@@ -50,7 +50,8 @@ public class ImageEditor {
      * @return a matrix filled with white pixels.
      */
     private static Color[][] createWhiteMatrix(Image image) {
-        Color[][] pixelArray = new Color[findNewDimension(image.getHeight())][findNewDimension(image.getWidth())];
+        Color[][] pixelArray = new Color[findNewDimension(image.getHeight())]
+                [findNewDimension(image.getWidth())];
         for (int i = 0; i < pixelArray.length; i++) {
             for (int j = 0; j < pixelArray[0].length; j++) {
                 pixelArray[i][j] = Color.WHITE;

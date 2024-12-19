@@ -21,8 +21,8 @@ public class Constants {
     public static final int DEFAULT_RESOLUTION = 2;
 
     /** Default character set for ASCII art generation. */
-    public static final TreeSet<Character> DEFAULT_CHARSET = new TreeSet<>(Arrays.asList('0', '1', '2', '3', '4',
-            '5', '6', '7', '8', '9'));
+    public static final TreeSet<Character> DEFAULT_CHARSET = new TreeSet<>
+            (Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'));
 
     /** Command to display the current character set. */
     public static final String CHAR_INPUT = "chars";

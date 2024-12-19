@@ -51,8 +51,8 @@ public class RoundAbsStrategy implements RoundStrategy {
         }
 
         // Find the nearest keys in the map
-        Double lowerKey = charBrightnessMap.floorKey(oldCharBrightness); // Closest key <= oldCharBrightness
-        Double higherKey = charBrightnessMap.ceilingKey(oldCharBrightness); // Closest key >= oldCharBrightness
+        Double lowerKey = charBrightnessMap.floorKey(oldCharBrightness);
+        Double higherKey = charBrightnessMap.ceilingKey(oldCharBrightness);
 
         // Handle edge cases where one of the keys might be null
         if (lowerKey == null) return charBrightnessMap.get(higherKey).first();
