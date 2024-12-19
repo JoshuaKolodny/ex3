@@ -1,7 +1,11 @@
-package strategies;
+package factories;
 
 import constants.Constants;
 import image_char_matching.SubImgCharMatcher;
+import strategies.RoundAbsStrategy;
+import strategies.RoundDownStrategy;
+import strategies.RoundStrategy;
+import strategies.RoundUpStrategy;
 
 public class RoundStrategyFactory {
     private final SubImgCharMatcher subImgCharMatcher;
@@ -19,7 +23,7 @@ public class RoundStrategyFactory {
             case "abs":
                 return new RoundAbsStrategy(subImgCharMatcher);
             default:
-                throw new IllegalArgumentException(Constants.stringIncorrectFormatMessage(Constants.ROUND_COMMAND));
+                throw new IllegalArgumentException(Constants.incorrectFormatMessage(Constants.ROUND_COMMAND));
         }
     }
 }

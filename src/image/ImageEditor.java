@@ -1,13 +1,10 @@
 package image;
 
+import constants.Constants;
+
 import java.awt.*;
 
 public class ImageEditor {
-    private static final double RED_MULT = 0.2126;
-    private static final double GREEN_MULT = 0.7152;
-    private static final double BLUE_MULT = 0.0722;
-    private static final int MAX_RGB_VAL = 255;
-
 
     public static Image padImage(Image image) {
         Color[][] pixelArray = buildPaddedColorArray(image);
@@ -87,11 +84,12 @@ public class ImageEditor {
                 sumGreyPixels += calculateGreyPixel(image.getPixel(i, j));
             }
         }
-        return (sumGreyPixels / (imageHeight * imageWidth)) / MAX_RGB_VAL;
+        return (sumGreyPixels / (imageHeight * imageWidth)) / Constants.MAX_RGB_VAL;
     }
 
     private static double calculateGreyPixel(Color pixel) {
-        return pixel.getRed() * RED_MULT + pixel.getGreen() * GREEN_MULT + pixel.getBlue() * BLUE_MULT;
+        return pixel.getRed() * Constants.RED_MULT + pixel.getGreen() * Constants.GREEN_MULT
+                + pixel.getBlue() * Constants.BLUE_MULT;
     }
 
 }

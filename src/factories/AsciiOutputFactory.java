@@ -1,5 +1,8 @@
-package ascii_output;
+package factories;
 
+import ascii_output.AsciiOutput;
+import ascii_output.ConsoleAsciiOutput;
+import ascii_output.HtmlAsciiOutput;
 import constants.Constants;
 
 public class AsciiOutputFactory {
@@ -11,7 +14,7 @@ public class AsciiOutputFactory {
             case "console":
                 return new ConsoleAsciiOutput();
             default:
-                throw new IllegalArgumentException(Constants.stringIncorrectFormatMessage(Constants.OUTPUT_COMMAND));
+                throw new IllegalArgumentException(Constants.incorrectFormatMessage(Constants.OUTPUT_COMMAND));
         }
     }
 

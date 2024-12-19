@@ -2,7 +2,7 @@ package image_char_matching;
 
 import strategies.RoundAbsStrategy;
 import strategies.RoundStrategy;
-import strategies.RoundStrategyFactory;
+import factories.RoundStrategyFactory;
 
 import java.util.TreeMap;
 import java.util.TreeSet;
